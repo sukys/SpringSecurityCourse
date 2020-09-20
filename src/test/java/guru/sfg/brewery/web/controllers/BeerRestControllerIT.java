@@ -4,10 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by jt on 6/12/20.
@@ -15,8 +14,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest
 public class BeerRestControllerIT extends BaseIT{
 
-    @WithMockUser("spring")
     @Test
+    void deleteBeer() throws Exception{
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                        .header("Api-Key", "spring")
+                        .header("Api-Secret", "guru"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser("spring")
     void findBeers() throws Exception{
         mockMvc.perform(get("/api/v1/beer"))
                 .andExpect(status().isOk());
