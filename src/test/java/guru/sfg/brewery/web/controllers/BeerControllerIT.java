@@ -16,8 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BeerControllerIT extends BaseIT{
 
 
-
-
     @Test
     void initCreationFormAdmin() throws Exception{
         mockMvc.perform(get("/beers/find").with(httpBasic("spring", "guru")))
@@ -37,6 +35,14 @@ public class BeerControllerIT extends BaseIT{
     @Test
     void initCreationFormCustomer() throws Exception{
         mockMvc.perform(get("/beers/find").with(httpBasic("scott", "tiger")))
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/findBeers"))
+                .andExpect(model().attributeExists("beer"));
+    }
+
+    @Test
+    void initCreationFormCustomerWithBcrypt15() throws Exception{
+        mockMvc.perform(get("/beers/find").with(httpBasic("scott_15", "tiger")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
                 .andExpect(model().attributeExists("beer"));

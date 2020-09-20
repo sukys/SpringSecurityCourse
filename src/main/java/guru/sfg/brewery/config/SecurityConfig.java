@@ -1,5 +1,6 @@
 package guru.sfg.brewery.config;
 
+import guru.sfg.brewery.security.SfgPasswordEncoderFactories;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,7 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // return new LdapShaPasswordEncoder();
         // return new BCryptPasswordEncoder(12);
         // return NoOpPasswordEncoder.getInstance();
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return SfgPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     @Override
@@ -52,7 +54,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .withUser("user").password("{sha256}0b6881efec12c737dc7c48737399274d06c34e08137f21958713d972dfcf483d1184633014a6694d").roles("USER")
                 .and()
-                .withUser("scott").password("{ldap}{SSHA}onAYT82u+1Zn09I9OlOCfujQOmEPj8v7iTN3QQ==").roles("CUSTOMER");
+                .withUser("scott").password("{ldap}{SSHA}onAYT82u+1Zn09I9OlOCfujQOmEPj8v7iTN3QQ==").roles("CUSTOMER")
+                .and()
+                .withUser("scott_15").password("{bcrypt15}$2a$15$Q1ScfKnd5KldAA4KKQRpNOn/CVGj2DvEhoEPVdXbgP9uLFGLVoR3a").roles("CUSTOMER");
     }
 
 //    @Bean
