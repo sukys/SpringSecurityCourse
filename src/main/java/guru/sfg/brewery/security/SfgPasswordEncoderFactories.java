@@ -27,6 +27,7 @@ public class SfgPasswordEncoderFactories {
     // Don't instantiate class
     private SfgPasswordEncoderFactories(){
         // nothing to do.
+
     }
 
 }
