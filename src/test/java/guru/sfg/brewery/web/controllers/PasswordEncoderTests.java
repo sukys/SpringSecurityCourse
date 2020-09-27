@@ -17,8 +17,9 @@ public class PasswordEncoderTests {
     @Test
     void testBcrypt15(){
         PasswordEncoder bcrypt15 = new BCryptPasswordEncoder(15);
-        System.out.println(bcrypt15.encode(PASSWORD));
-        System.out.println(bcrypt15.encode("tiger"));
+        System.out.println("BCrypt15 for Password: " + bcrypt15.encode(PASSWORD));
+        System.out.println("BCrypt15 for Guru: " + bcrypt15.encode("guru"));
+        System.out.println("BCrypt15 for Tiger: " + bcrypt15.encode("tiger"));
     }
 
     @Test
@@ -26,7 +27,8 @@ public class PasswordEncoderTests {
         PasswordEncoder bcrypt = new BCryptPasswordEncoder();
         System.out.println(bcrypt.encode(PASSWORD));
         System.out.println(bcrypt.encode(PASSWORD));
-        System.out.println(bcrypt.encode("guru"));
+        System.out.println("BCrypt for Guru: " + bcrypt.encode("guru"));
+        System.out.println("BCrypt for tiger: " + bcrypt.encode("tiger"));
     }
 
     @Test
