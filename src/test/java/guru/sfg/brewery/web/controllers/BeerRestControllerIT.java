@@ -15,6 +15,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BeerRestControllerIT extends BaseIT{
 
 
+    @Test
+    void deleteBeerFromUrlParameter() throws Exception {
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                        .param("username", "spring")
+                        .param("password", "guru"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void unauthorizedDeleteBeerFromUrlParameter() throws Exception {
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                        .param("username", "spring")
+                        .param("password", "guru_not"))
+                .andExpect(status().isUnauthorized());
+    }
+
 
     @Test
     void deleteBeerBadCredential() throws Exception{

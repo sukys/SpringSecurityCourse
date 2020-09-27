@@ -43,8 +43,9 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
         HttpServletResponse response = (HttpServletResponse) res;
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Request is to process authentication");
+            logger.debug("Request is to process authentication.");
         }
+
 
         try {
             Authentication authResult = attemptAuthentication(request, response);
@@ -107,7 +108,8 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
 
 
     private String getPassword(HttpServletRequest request) {
-        String value = request.getHeader("Api-Secret");
+        String value = null;
+        value = request.getHeader("Api-Secret") != null ? request.getHeader("Api-Secret") : request.getParameter("password");
         if(Objects.isNull(value)){
             value = "";
         }
@@ -115,7 +117,8 @@ public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter
     }
 
     private String getUsername(HttpServletRequest request) {
-        String value =  request.getHeader("Api-Key");
+        String value = null;
+        value = request.getHeader("Api-Key") != null ? request.getHeader("Api-Key") : request.getParameter("username") ;
         if(Objects.isNull(value)){
             value = "";
         }
