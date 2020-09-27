@@ -35,6 +35,7 @@ public class UserDataLoader implements CommandLineRunner {
         createUser("spring", "guru", admin);
         createUser("user", "password", user);
         createUser("scott", "tiger", customer);
+        createUser("scott_15", "tiger", customer);
 
         log.debug("Users loaded: " + userRepository.count() + ".");
     }
