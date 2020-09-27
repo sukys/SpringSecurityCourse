@@ -24,101 +24,24 @@ import java.util.Objects;
 
 
 @Slf4j
-public class RestHeaderAuthFilter extends AbstractAuthenticationProcessingFilter {
-
+public class RestHeaderAuthFilter extends AbstractRestAuthFilter {
 
     public RestHeaderAuthFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
     }
 
-
-
-
-
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-            throws IOException, ServletException {
-
-        HttpServletRequest request = (HttpServletRequest) req;
-        HttpServletResponse response = (HttpServletResponse) res;
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Request is to process authentication.");
-        }
-
-
-        try {
-            Authentication authResult = attemptAuthentication(request, response);
-            if(Objects.nonNull(authResult)){
-                successfulAuthentication(request, response, chain, authResult);
-            } else {
-                chain.doFilter(request, response);
-            }
-        } catch (AuthenticationException e){
-            log.debug("Authentication Failed. ", e);
-            unsuccessfulAuthentication(request, response, e);
-        }
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request,
-                                              HttpServletResponse response, AuthenticationException failed)
-            throws IOException, ServletException {
-        SecurityContextHolder.clearContext();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Authentication request failed: " + failed.toString(), failed);
-            log.debug("Updated SecurityContextHolder to contain null Authentication");
-        }
-
-        response.sendError(HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.getReasonPhrase());
-    }
-
-
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        String username = getUsername(request);
-        String password = getPassword(request);
-
-        log.debug("Authenticating user: [{}].", username);
-
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-
-        if(!StringUtils.isEmpty(username)){
-            return this.getAuthenticationManager().authenticate(token);
-        } else {
-            return null;
-        }
-
-    }
-
-
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request,
-                                            HttpServletResponse response, FilterChain chain, Authentication authResult)
-            throws IOException, ServletException {
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Authentication success. Updating SecurityContextHolder to contain: "
-                    + authResult);
-        }
-        SecurityContextHolder.getContext().setAuthentication(authResult);
-    }
-
-
-    private String getPassword(HttpServletRequest request) {
-        String value = null;
-        value = request.getHeader("Api-Secret") != null ? request.getHeader("Api-Secret") : request.getParameter("password");
+    protected String getPassword(HttpServletRequest request) {
+        String value = request.getHeader("Api-Secret");
         if(Objects.isNull(value)){
             value = "";
         }
         return value;
     }
 
-    private String getUsername(HttpServletRequest request) {
-        String value = null;
-        value = request.getHeader("Api-Key") != null ? request.getHeader("Api-Key") : request.getParameter("username") ;
+    @Override
+    protected String getUsername(HttpServletRequest request) {
+        String value = request.getHeader("Api-Key");
         if(Objects.isNull(value)){
             value = "";
         }
