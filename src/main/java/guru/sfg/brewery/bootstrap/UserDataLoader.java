@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UserDataLoader implements CommandLineRunner {
+class Loader implements CommandLineRunner {
 
 
     private final AuthorityRepository authorityRepository;
@@ -28,9 +28,9 @@ public class UserDataLoader implements CommandLineRunner {
     }
 
     private void loadSecurityData() {
-        Authority admin = authorityRepository.save(Authority.builder().role("ADMIN").build());
-        Authority user = authorityRepository.save(Authority.builder().role("USER").build());
-        Authority customer = authorityRepository.save(Authority.builder().role("CUSTOMER").build());
+        Authority admin = authorityRepository.save(Authority.builder().role("ROLE_ADMIN").build());
+        Authority user = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
+        Authority customer = authorityRepository.save(Authority.builder().role("ROLE_CUSTOMER").build());
 
         createUser("spring", "guru", admin);
         createUser("user", "password", user);
