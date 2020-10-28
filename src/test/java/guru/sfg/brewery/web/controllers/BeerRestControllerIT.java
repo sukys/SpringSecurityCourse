@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,6 +18,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BeerRestControllerIT extends BaseIT{
 
 
+
+    @Test
+    void deleteBeerHttpBasic() throws Exception {
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                .with(httpBasic("spring", "guru")))
+                .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    void deleteBeerHttpBasicUserRole() throws Exception {
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                        .with(httpBasic("user", "password")))
+                .andExpect(status().isForbidden());
+    }
+
+
+    @Test
+    void deleteBeerHttpBasicCustomerRole() throws Exception {
+        mockMvc.perform(
+                delete("/api/v1/beer/8f0d99df-62f6-4e70-958f-d0b5b1a07b7e")
+                        .with(httpBasic("scott", "tiger")))
+                .andExpect(status().isForbidden());
+    }
+
+
     @Test
     void deleteBeerFromUrlParameter() throws Exception {
         mockMvc.perform(
@@ -25,6 +53,7 @@ public class BeerRestControllerIT extends BaseIT{
                         .param("password", "guru"))
                 .andExpect(status().isOk());
     }
+
 
     @Test
     void unauthorizedDeleteBeerFromUrlParameter() throws Exception {
