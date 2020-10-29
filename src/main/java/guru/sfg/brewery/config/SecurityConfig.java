@@ -49,8 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/beers*", "/beers/*", "/beers/find").permitAll()
                     .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
                     .mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
-                    .mvcMatchers("/brewery/breweries").hasRole("CUSTOMER")
-                    .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries/**").hasRole("CUSTOMER")
+                    .mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
+                    .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries/**").hasAnyRole("ADMIN","CUSTOMER")
                     .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll();
         })
                 .authorizeRequests()
@@ -66,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     PasswordEncoder passwordEncoder() {
         // return new LdapShaPasswordEncoder();
-        // return new BCryptPasswordEncoder(12);
+        // return new BCryptPasswordEncoder(12); 
         // return NoOpPasswordEncoder.getInstance();
         // return PasswordEncoderFactories.createDelegatingPasswordEncoder();
         return SfgPasswordEncoderFactories.createDelegatingPasswordEncoder();
