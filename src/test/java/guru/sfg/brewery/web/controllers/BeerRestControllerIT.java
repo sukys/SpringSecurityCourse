@@ -117,6 +117,76 @@ public class BeerRestControllerIT extends BaseIT{
 
     }
 
+
+    @DisplayName("Find Tests")
+    @Nested
+    class FindTests {
+        Beer beer = beerRepository.findAll().get(0);
+
+        @Test
+        void listBeerCUSTOMER() throws Exception {
+            mockMvc.perform(get("/api/v1/beer/" + beer.getId())
+                    .with(httpBasic("scott", "tiger")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+        @Test
+        void listBeerUSER() throws Exception {
+            mockMvc.perform(get("/api/v1/beer/" + beer.getId())
+                    .with(httpBasic("user", "password")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+        @Test
+        void listBeerADMIN() throws Exception {
+            mockMvc.perform(get("/api/v1/beer/" + beer.getId())
+                    .with(httpBasic("spring", "guru")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+
+        @Test
+        void listBeerNOAUTH() throws Exception {
+            mockMvc.perform(
+                    get("/api/v1/beer/" + beer.getId()))
+                    .andExpect(status().isUnauthorized());
+        }
+
+
+
+        @Test
+        void listBeerUpcCUSTOMER() throws Exception {
+            mockMvc.perform(get("/api/v1/beerUpc/" + beer.getUpc())
+                    .with(httpBasic("scott", "tiger")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+        @Test
+        void listBeerUpcUSER() throws Exception {
+            mockMvc.perform(get("/api/v1/beerUpc/" + beer.getUpc())
+                    .with(httpBasic("user", "password")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+        @Test
+        void listBeerUpcADMIN() throws Exception {
+            mockMvc.perform(get("/api/v1/beerUpc/" + beer.getUpc())
+                    .with(httpBasic("spring", "guru")))
+                    .andExpect(status().is2xxSuccessful());
+        }
+
+
+        @Test
+        void listBeerUpcNOAUTH() throws Exception {
+            mockMvc.perform(
+                    get("/api/v1/beerUpc/" + beer.getUpc()))
+                    .andExpect(status().isUnauthorized());
+        }
+
+
+    }
+
+
     @Test
     @WithMockUser("spring")
     void findBeers() throws Exception{
