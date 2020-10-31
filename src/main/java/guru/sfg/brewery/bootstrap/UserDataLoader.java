@@ -1,14 +1,21 @@
 package guru.sfg.brewery.bootstrap;
 
 import guru.sfg.brewery.domain.security.Authority;
+import guru.sfg.brewery.domain.security.Role;
 import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.AuthorityRepository;
+import guru.sfg.brewery.repositories.security.RoleRepository;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -17,10 +24,12 @@ class Loader implements CommandLineRunner {
 
 
     private final AuthorityRepository authorityRepository;
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         if(authorityRepository.count() == 0){
             loadSecurityData();
@@ -28,23 +37,54 @@ class Loader implements CommandLineRunner {
     }
 
     private void loadSecurityData() {
-        Authority admin = authorityRepository.save(Authority.builder().role("ROLE_ADMIN").build());
-        Authority user = authorityRepository.save(Authority.builder().role("ROLE_USER").build());
-        Authority customer = authorityRepository.save(Authority.builder().role("ROLE_CUSTOMER").build());
 
-        createUser("spring", "guru", admin);
-        createUser("user", "password", user);
-        createUser("scott", "tiger", customer);
-        createUser("scott_15", "tiger", customer);
+        // Beer Auths
+        Authority createBeer = authorityRepository.save(Authority.builder().permission("beer.create").build());
+        Authority readBeer = authorityRepository.save(Authority.builder().permission("beer.read").build());
+        Authority updateBeer = authorityRepository.save(Authority.builder().permission("beer.update").build());
+        Authority deleteBeer = authorityRepository.save(Authority.builder().permission("beer.delete").build());
+
+        // Customer Auths
+        Authority createCustomer = authorityRepository.save(Authority.builder().permission("customer.create").build());
+        Authority readCustomer = authorityRepository.save(Authority.builder().permission("customer.read").build());
+        Authority updateCustomer = authorityRepository.save(Authority.builder().permission("customer.update").build());
+        Authority deleteCustomer = authorityRepository.save(Authority.builder().permission("customer.delete").build());
+
+        // Brewery Auths
+        Authority createBrewery = authorityRepository.save(Authority.builder().permission("brewery.create").build());
+        Authority readBrewery = authorityRepository.save(Authority.builder().permission("brewery.read").build());
+        Authority updateBrewery = authorityRepository.save(Authority.builder().permission("brewery.update").build());
+        Authority deleteBrewery = authorityRepository.save(Authority.builder().permission("brewery.delete").build());
+
+
+        Role adminRole = roleRepository.save(Role.builder().roleName("ADMIN").build());
+        Role customerRole = roleRepository.save(Role.builder().roleName("CUSTOMER").build());
+        Role userRole = roleRepository.save(Role.builder().roleName("USER").build());
+
+        adminRole.setAuthorities(new HashSet<>(Set.of(createBeer, readBeer, updateBeer, deleteBeer, createCustomer,
+                readCustomer, updateCustomer, deleteCustomer, createBrewery, readBrewery, updateBrewery,
+                deleteBrewery)));
+
+        customerRole.setAuthorities(new HashSet<>(Set.of(readBeer, readBrewery, readCustomer)));
+        userRole.setAuthorities(new HashSet<>(Set.of(readBeer)));
+
+        roleRepository.saveAll(Arrays.asList(adminRole, customerRole, userRole));
+
+        createUser("spring", "guru", adminRole);
+        createUser("user", "password", userRole);
+        createUser("scott", "tiger", customerRole);
+
+        //createUser("scott_15", "tiger", customerRole);
 
         log.debug("Users loaded: " + userRepository.count() + ".");
     }
 
-    private User createUser(String username, String password, Authority role){
+    private User createUser(String username, String password, Role role){
+        Role roleFromDb = roleRepository.findById(role.getId()).get();
         return userRepository.save(User.builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
-                .authority(role)
+                .role(roleFromDb)
                 .build());
     }
 
