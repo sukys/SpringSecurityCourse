@@ -20,7 +20,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
@@ -50,12 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/", "/webjars/**", "/resources/**", "/login").permitAll()
                     .antMatchers("/beers*", "/beers/*", "/beers/find").hasAnyRole("ADMIN", "CUSTOMER", "USER")
                     .antMatchers(HttpMethod.GET, "/api/v1/beer/**").hasAnyRole("ADMIN", "CUSTOMER", "USER")
-                    .mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
+                    // .mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
                     .mvcMatchers("/brewery/breweries").hasAnyRole("ADMIN", "CUSTOMER")
                     .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries/**").hasAnyRole("ADMIN","CUSTOMER")
-
                     //.mvcMatchers(HttpMethod.GET, "/api/v1/beer/**", "/api/v1/beerUpc").hasAnyRole("ADMIN", "CUSTOMER", "USER")
-
                     .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").hasAnyRole("ADMIN", "CUSTOMER", "USER");
         })
                 .authorizeRequests()
