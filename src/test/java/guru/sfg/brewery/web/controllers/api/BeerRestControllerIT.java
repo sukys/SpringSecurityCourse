@@ -66,7 +66,6 @@ public class BeerRestControllerIT extends BaseIT {
                     .andExpect(status().isForbidden());
         }
 
-
         @Test
         void deleteBeerHttpBasicCustomerRole() throws Exception {
             mockMvc.perform(
