@@ -1,7 +1,7 @@
 package guru.sfg.brewery.domain.security;
 
+import guru.sfg.brewery.domain.Customer;
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -35,7 +35,8 @@ public class User implements UserDetails, CredentialsContainer {
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private Set<Role> roles;
 
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Customer customer;
 
     @Transient
     public Set<GrantedAuthority> getAuthorities() {
