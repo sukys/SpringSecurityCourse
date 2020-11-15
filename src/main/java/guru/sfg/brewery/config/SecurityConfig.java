@@ -29,41 +29,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new SecurityEvaluationContextExtension();
     }
 
-    public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
-        RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
-        filter.setAuthenticationManager(authenticationManager);
-        return filter;
-    }
-
-    public RestUrlAuthFilter restUrlAuthFilter(AuthenticationManager authenticationManager) {
-        RestUrlAuthFilter filter = new RestUrlAuthFilter(new AntPathRequestMatcher("/api/**"));
-        filter.setAuthenticationManager(authenticationManager);
-        return filter;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(restHeaderAuthFilter(authenticationManager()),
-                UsernamePasswordAuthenticationFilter.class)
-                .csrf().ignoringAntMatchers("/h2-console/**", "/api/**", "/login");
-
-        http.addFilterBefore(restUrlAuthFilter(authenticationManager()),
-                UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests(authorize -> {
-            authorize
-                    .antMatchers("/h2-console/**").permitAll() //  do not use in production
-                    .antMatchers("/", "/webjars/**", "/resources/**", "/login").permitAll();
-            })
+                authorize
+                    .antMatchers("/h2-console/**").permitAll() //do not use in production!
+                    .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll();
+            } )
             .authorizeRequests()
             .anyRequest().authenticated()
             .and()
-            .formLogin().and()
-            .httpBasic();
+            .formLogin(loginConfigurer -> {
+                loginConfigurer
+                    .loginProcessingUrl("/login")
+                    .loginPage("/").permitAll()
+                    .successForwardUrl("/")
+                    .defaultSuccessUrl("/")
+                    .failureUrl("/?error");
+            })
+            .logout(logoutConfigurer -> {
+                logoutConfigurer
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                    .logoutSuccessUrl("/?logout")
+                    .permitAll();
+            })
+            .httpBasic()
+            .and().csrf().ignoringAntMatchers("/h2-console/**", "/api/**");
 
-        // h2 console config
+        //h2 console config
         http.headers().frameOptions().sameOrigin();
     }
+
 
     @Bean
     PasswordEncoder passwordEncoder() {
