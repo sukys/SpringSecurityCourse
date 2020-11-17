@@ -68,7 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .rememberMe()
                 .tokenRepository(persistentTokenRepository)
-                // .key("sfg-key")
+                // .key("sfg-key") // used without token repository
                 .userDetailsService(userDetailsService);
 
         //h2 console config
