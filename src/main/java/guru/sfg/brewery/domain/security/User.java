@@ -84,6 +84,11 @@ public class User implements UserDetails, CredentialsContainer {
     @Builder.Default
     private Boolean enabled = true;
 
+    @Override
+    public void eraseCredentials() {
+        this.password = null;
+    }
+
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp createDate;
@@ -91,8 +96,16 @@ public class User implements UserDetails, CredentialsContainer {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
-    @Override
-    public void eraseCredentials() {
-        this.password = null;
-    }
+
+    // Google 2FA:
+
+    @Builder.Default
+    private Boolean userGoogle2Fa = false;
+
+    private String google2FaSecret;
+
+    @Transient
+    private Boolean google2FaRequired = true;
+
+
 }
