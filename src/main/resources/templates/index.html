@@ -27,10 +27,14 @@
 <body>
 <h2 th:text="#{welcomemsg}">SFG Brewery Monolith</h2>
 
-
+<!-- Usuário inexistente ou senha inválida -->
+<!-- Conta bloqueada -->
 <div sec:authorize="!isAuthenticated()" class="row" >
+    <!-- <h2 th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message}"></h2> -->
     <div class="col-md-12">
-        <div th:if="${param.error}" class="alert alert-danger">Invalid username or password.</div>
+        <!--<div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} != ''" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message}" class="alert alert-danger"></div>-->
+        <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} == 'Usuário inexistente ou senha inválida'" class="alert alert-danger">Invalid username or password.</div>
+        <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} == 'Conta bloqueada'" class="alert alert-danger">User account is Locked.</div>
         <div th:if="${param.logout}" class="alert alert-success">You have logged out.</div>
         <form th:action="@{/login}" method="post">
             <label for="username">Username </label>
@@ -54,8 +58,6 @@
         <p><a th:href="@{/logout}">Logout</a></p>
     </div>
 </div>
-
-
 
 <div class="row">
     <div class="col-md-12">
