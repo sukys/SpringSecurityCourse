@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
+
 @Slf4j
 @Controller
 @RequestMapping("/user")
@@ -43,14 +45,17 @@ public class UserController {
     public String confirm2Fa(@RequestParam Integer verifyCode){
         User user = getUser();
         log.debug("Entered Code is: {}", verifyCode);
+        log.debug("User found is: {}", user.getUsername());
 
-        if(googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)){
+        if(googleAuthenticator.authorizeUser(user.getUsername(), verifyCode, new Date().getTime())){
             User savedUser = userRepository.findById(user.getId()).orElseThrow();
             savedUser.setUseGoogle2Fa(true);
             userRepository.save(savedUser);
+            log.debug("Authenticated!!");
             return "index";
         } else {
             // bad code
+            log.debug("Authentication Failed.");
             return "/user/register2fa";
         }
 
@@ -64,10 +69,13 @@ public class UserController {
     @PostMapping("/verify2fa")
     public String verify2Fa(@RequestParam Integer verifyCode){
         User user = getUser();
+        log.debug("Verifying 2FA for user {};", user.getUsername());
         if(googleAuthenticator.authorizeUser(user.getUsername(), verifyCode)){
             ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setGoogle2FaRequired(false);
+            log.debug("Verification success.");
             return "/index";
         } else {
+            log.debug("Verification failure.");
             return "/user/verify2fa";
         }
     }

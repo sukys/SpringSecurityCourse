@@ -42,6 +42,8 @@ public class GoogleCredentialRepository implements ICredentialRepository {
         User user = userRepository.findByUsername(userName).orElseThrow();
         user.setGoogle2FaSecret(secretKey);
         user.setUseGoogle2Fa(true);
+        log.debug("User Found: {}",user.getUsername());
+        log.debug("Saving: \n\tGoogle2faSecret: {}\n\tUse 2FA? {} ", secretKey, true);
         userRepository.save(user);
     }
 }
